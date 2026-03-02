@@ -38,6 +38,8 @@ Para garantir a escalabilidade, o projeto utiliza uma arquitetura de Dicionário
 ## 🗺️ Fluxograma
 O fluxo detalha o caminho da informação desde a entrada do dado até a geração do relatório final.
 
+![Fluxograma](Oráculo%20Financeiro%202.0.webp)
+
 ## 📚 Aprendizados
 - Estruturação de dados complexos com dicionários e listas em Python.
 - Lógica de comparação temporal para relatórios financeiros.
