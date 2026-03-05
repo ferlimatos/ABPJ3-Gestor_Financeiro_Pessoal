@@ -62,7 +62,7 @@ def calcular_saldo(mes=None):
     
     return saldo
 
-def mostrar_relatorio():
+def mostrar_saldo():
     if not dados_do_app["historico"]:
         print("Histórico vazio!")
         return
@@ -93,6 +93,7 @@ def percorrer_mes():
     # Mostra os meses disponíveis para o usuário
     for i, nome_mes in enumerate(dados_do_app["meses"], start=1):
         print(f"{i} - {nome_mes}")
+        idx = int(input("Número do mês: ")) - 1
     
 def percorrer_despesas():
     # Mostra os tipos de despesas disponíveis para o usuário
@@ -100,11 +101,16 @@ def percorrer_despesas():
         print(f"{i} - {tipo_despesa}")
 
 def obter_mes_validado(idx):
-    if 0 <= idx < len(dados_do_app["meses"]):
-        return dados_do_app["meses"][idx]
-    else:
-        print('Mês inválido! Por favor, escolha um número da lista.')
-        return None
+    while True:
+        percorrer_mes()
+        try:
+            idx = int(input("Número do mês: ")) - 1
+            if 0 <= idx < len(dados_do_app["meses"]):
+                return dados_do_app["meses"][idx]
+            else:
+                print('\nMês inválido! Tente um número entre 1 e 12.')
+        except ValueError:
+            print('\nPor favor, digite apenas números!')
 
 # Loop para o menu principal do programa
 while True:
@@ -129,7 +135,7 @@ while True:
             percorrer_mes()
             idx = int(input("Número do mês: ")) - 1
             mes = obter_mes_validado(idx)
-            
+
             if mes:
                 percorrer_despesas()
                 idx_d = int(input("Número da categoria: ")) - 1
@@ -143,7 +149,7 @@ while True:
                     print("Categoria inválida!")
 
         case 3:
-            mostrar_relatorio()
+            mostrar_saldo()
 
         case 4:
             print('Encerrando... Até logo!')
