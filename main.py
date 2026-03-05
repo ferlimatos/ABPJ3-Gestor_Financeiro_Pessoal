@@ -1,111 +1,172 @@
 
-financeiro = {}
-
-# Dicionário 1
+# Dicionário de configuração da aplicação
 dados_do_app = {
     "meses": ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-    "despesas": ['Aluguel', 'Energia', 'Água', 'Internet', 'Cartão de Crédito'],
-    "periodo_de_gasto": ['Semanal', 'Mensal', 'Bimestral', 'Trimestral', 'Semestral', 'Anual'],
-    "ano": [],
-    "valor": [],
-    "historico": [] # Uma lista que vai guardando cada transação
+    "categorias": ['Aluguel', 'Energia', 'Água', 'Internet', 'Cartão de Crédito'],
+    "historico": []  
 }
 
-def percorrer_mês():
-    # Mostra os meses para o usuário
+def percorrer_mes():
+    # Mostra os meses disponíveis para o usuário
     for i, nome_mes in enumerate(dados_do_app["meses"], start=1):
-          print(f"{i} - {nome_mes}")
+        print(f"{i} - {nome_mes}")
     
 def percorrer_despesas():
-    # Mostra os tipos de despesas para o usuário
-    for i, tipo_despesa in enumerate(dados_do_app["despesas"], start=1):
-          print(f"\n{i} - {tipo_despesa}")
+    # Mostra os tipos de despesas disponíveis para o usuário
+    for i, tipo_despesa in enumerate(dados_do_app["categorias"], start=1):
+        print(f"{i} - {tipo_despesa}")
 
-def cadastrar_receita():
-   # Adicionar valores ao dicionário do mês correspondente.
-   registro_receita = {
-        "mes": mes_escolhido, 
-        "valor": receita_atual
-        }
-   dados_do_app["historico"].append(registro_receita)
+def cadastrar_receita(mes, valor):
+    # Adiciona valores de receita ao dicionário do mês correspondente.
+    registro_receita = {
+        "tipo": "receita",
+        "mes": mes, 
+        "valor": valor,
+        "categoria": "Receita"
+    }
+    dados_do_app["historico"].append(registro_receita)
+    print(f'Receita de R${valor:.2f} adicionada no mês {mes} com sucesso!')
 
-def calcular_saldo():
-   # Realiza a subtração entre receitas e despesas, informando se o saldo está positivo ou negativo.
-  registro_gasto = {
-        "mes": mes_escolhido, 
-        "valor": gasto_atual, 
-        "tipo_despesa": despesa_escolhida
-  }
-  
+def cadastrar_despesa(mes, valor, categoria):
+    # Registra gastos e gera a lista atualizada de débitos.
+    registro_gasto = {
+        "tipo": "despesa",
+        "mes": mes, 
+        "valor": valor, 
+        "categoria": categoria
+    }
+    dados_do_app["historico"].append(registro_gasto)
+    print(f'Despesa de R${valor:.2f} ({categoria}) adicionada no mês {mes} com sucesso!')
+
+def calcular_saldo(mes=None):
+    # Realiza a subtração entre receitas e despesas, informando se o saldo está positivo ou negativo.
+    receitas_totais = 0
+    despesas_totais = 0
+    
+    for transacao in dados_do_app["historico"]:
+        # Se um mês foi especificado, filtrar apenas aquele mês
+        if mes and transacao["mes"] != mes:
+            continue
             
-  
-  dados_do_app["historico"].append(registro_gasto)
+        if transacao["tipo"] == "receita":
+            receitas_totais += transacao["valor"]
+        else:
+            despesas_totais += transacao["valor"]
+    
+    saldo = receitas_totais - despesas_totais
+    periodo = f"do mês {mes}" if mes else "de todos os meses"
+    
+    print(f"\n{'='*50}")
+    print(f"SALDO FINANCEIRO {periodo.upper()}")
+    print(f"{'='*50}")
+    print(f"Receitas Total:    R$ {receitas_totais:.2f}")
+    print(f"Despesas Total:    R$ {despesas_totais:.2f}")
+    print(f"Saldo:             R$ {saldo:.2f}")
+    
+    if saldo > 0:
+        print(f" POSITIVO - Situação financeira saudável!")
+    elif saldo < 0:
+        print(f"Saldo NEGATIVO - Você está em débito!")
+    else:
+        print(f"= Saldo ZERO - Receitas e despesas equilibradas!")
+    print(f"{'='*50}\n")
+    
+    return saldo
 
-"""def mostrar_relatorio():
-   # Identifica o mês de maior lucro e o mês de maior endividamento, sugerindo o valor necessário para a quitação.
+def mostrar_relatorio():
+    if not dados_do_app["historico"]:
+        print("Histórico vazio!")
+        return
+
+    # Usamos um dicionário simples para somar os saldos
+    saldos = {}
+
+    for t in dados_do_app["historico"]:
+        mes = t["mes"]
+        valor = t["valor"]
+        
+        # Se o mês ainda não está no dicionário, começa com 0
+        if mes not in saldos:
+            saldos[mes] = 0.0
+        
+        # Se for receita soma, se for despesa subtrai
+        if t["tipo"] == "receita":
+            saldos[mes] += valor
+        else:
+            saldos[mes] -= valor
+
+    print("\n--- RESUMO POR MÊS ---")
+    for mes, valor_final in saldos.items():
+        print(f"{mes}: R$ {valor_final:.2f}")
+
+    # Encontrando o melhor e o pior mês de forma simples
+    melhor_mes = max(saldos, key=saldos.get)
+    pior_mes = min(saldos, key=saldos.get)
+
+    print(f"\nMaior Lucro: {melhor_mes}")
+    print(f"Maior Endividamento: {pior_mes}")
 
 def imposto_gasto():
-   # Analisa qual categoria de despesa consumiu a maior parte do orçamento no período."""
+    gastos_por_categoria = {}
+
+    for t in dados_do_app["historico"]:
+        # Só nos interessam as despesas
+        if t["tipo"] == "despesa":
+            cat = t["categoria"]
+            valor = t["valor"]
+
+            if cat not in gastos_por_categoria:
+                gastos_por_categoria[cat] = 0.0
+            
+            gastos_por_categoria[cat] += valor
+
+    if not gastos_por_categoria:
+        print("Nenhuma despesa encontrada.")
+        return
+
+    print("\n--- GASTOS POR CATEGORIA ---")
+    for cat, total in gastos_por_categoria.items():
+        print(f"{cat}: R$ {total:.2f}")
+
+    # Descobre qual categoria tem o maior valor
+    maior_cat = max(gastos_por_categoria, key=gastos_por_categoria.get)
+    print(f"\nCategoria que mais pesou no bolso: {maior_cat}")
 
 # Loop para o menu principal do programa
 while True:
-  print('''Seja bem-vindo ao Oráculo Financeiro 2.0!
-  '1 - Digite 1 para registrar uma receita.
-  '2 - Digite 2 para registrar uma gasto.
-  '3 - Digite 3 para registrar registro de receita ou gasto de um mês.
-  '4 - Digite 4 para sair do programa.''')
+    print('\n--- ORÁCULO FINANCEIRO 2.0 ---')
+    print('1 - Registrar Receita')
+    print('2 - Registrar Gasto')
+    print('3 - Ver Relatório Geral')
+    print('4 - Sair')
 
-  menu_escolha = int(input('Digite o número: '))
+    escolha = int(input('\nEscolha uma opção: '))
 
-  match menu_escolha:
-    case 1:
-      percorrer_mês()
-      opcao_mes = int(input("\nEscolha o número do mês: "))
-      indice = opcao_mes - 1 
-      mes_escolhido = (dados_do_app["meses"])[indice]
-      print(f"Você escolheu: {mes_escolhido}")
+    match escolha:
+        case 1:
+            percorrer_mes()
+            idx = int(input("Número do mês: ")) - 1
+            mes = dados_do_app["meses"][idx]
+            valor = float(input(f"Valor da receita para {mes}: R$ "))
+            cadastrar_receita(mes, valor)
 
-      # Inserir valor da receita
-      receita_atual = float(input('Digite um valor de sua receita: '))
-      print(f'Você adicinou: R${receita_atual}')
-      dados_do_app.setdefault("valor", {receita_atual})
-      print(f'Receita de R${receita_atual} adicionada no mês {mes_escolhido} com sucesso!')
+        case 2:
+            percorrer_mes()
+            idx_m = int(input("Número do mês: ")) - 1
+            mes = dados_do_app["meses"][idx_m]
+            
+            percorrer_despesas()
+            idx_d = int(input("Número da categoria: ")) - 1
+            cat = dados_do_app["categorias"][idx_d]
+            
+            valor = float(input(f"Valor do gasto em {cat}: R$ "))
+            cadastrar_despesa(mes, valor, cat)
 
-    case 2:
-      percorrer_mês()
-      opcao_mes = int(input("Escolha o número do mês: "))
-      mes_escolhido = (dados_do_app["meses"])[opcao_mes]
+        case 3:
+            mostrar_relatorio()
 
-      # Inserir valor do gasto
-      gasto_atual = float(input('Digite um valor de seu gasto: '))
-      print(f'Você adicinou: R${gasto_atual}')
-      print(f'Receita de R${gasto_atual} adicionada no mês {mes_escolhido} com sucesso!')
-
-      # Mostrar as opções de despesas
-      percorrer_despesas()
-      opcao_despesa = int(input("Escolha o tipo de despesa: "))
-      despesa_escolhida = dados_do_app["despesas"][opcao_despesa]
-
-    case 3: 
-      percorrer_mês()
-      opcao_mes = int(input("Escolha o número do mês: "))
-      mes_escolhido = (dados_do_app["meses"])[opcao_mes]
-
-      tipo_transacao = input('Você deseja ver todas as receitas ou gastos? (Receitas/Gastos): ')
-
-      if tipo_transacao > 0:
-        for i, receita_mes_selecionado in dados_do_app['historico']:
-        # Mostrar todas as receitas registradas do mês até o momento.
-          print(f"Registro de todas as receitas do mês de {mes_escolhido}:")
-          print(f"{i}")
-      else:
-        print("Não há nenhuma transação registrada no histórico!")
-    case 4:
-      print('Programa encerrado!')
-      break
-    case _:
-        print('Comando inválido! Tente novamente.')
-
-# Para o case 3, você terá que percorrer o seu historico.
-# Melhorar o nome de dados e variáveis, organizar melhor o dicinário.
-# Depois que aprender sobre modulo e função, atualizar o código pra isso.
+        case 4:
+            print('Encerrando... Até logo!')
+            break
+        case _:
+            print('Opção inválida!')
