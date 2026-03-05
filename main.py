@@ -6,16 +6,7 @@ dados_do_app = {
     "historico": []  
 }
 
-def percorrer_mes():
-    # Mostra os meses disponíveis para o usuário
-    for i, nome_mes in enumerate(dados_do_app["meses"], start=1):
-        print(f"{i} - {nome_mes}")
-    
-def percorrer_despesas():
-    # Mostra os tipos de despesas disponíveis para o usuário
-    for i, tipo_despesa in enumerate(dados_do_app["categorias"], start=1):
-        print(f"{i} - {tipo_despesa}")
-
+# Funções principais
 def cadastrar_receita(mes, valor):
     # Adiciona valores de receita ao dicionário do mês correspondente.
     registro_receita = {
@@ -56,9 +47,7 @@ def calcular_saldo(mes=None):
     saldo = receitas_totais - despesas_totais
     periodo = f"do mês {mes}" if mes else "de todos os meses"
     
-    print(f"\n{'='*50}")
-    print(f"SALDO FINANCEIRO {periodo.upper()}")
-    print(f"{'='*50}")
+    print(f"\nSALDO FINANCEIRO {periodo.upper()}")
     print(f"Receitas Total:    R$ {receitas_totais:.2f}")
     print(f"Despesas Total:    R$ {despesas_totais:.2f}")
     print(f"Saldo:             R$ {saldo:.2f}")
@@ -78,19 +67,19 @@ def mostrar_relatorio():
         print("Histórico vazio!")
         return
 
-    # Usamos um dicionário simples para somar os saldos
+    # Usar um dicionário simples para somar os saldos
     saldos = {}
 
-    for t in dados_do_app["historico"]:
-        mes = t["mes"]
-        valor = t["valor"]
+    for i in dados_do_app["historico"]:
+        mes = i["mes"]
+        valor = i["valor"]
         
         # Se o mês ainda não está no dicionário, começa com 0
         if mes not in saldos:
             saldos[mes] = 0.0
         
         # Se for receita soma, se for despesa subtrai
-        if t["tipo"] == "receita":
+        if i["tipo"] == "receita":
             saldos[mes] += valor
         else:
             saldos[mes] -= valor
@@ -99,42 +88,27 @@ def mostrar_relatorio():
     for mes, valor_final in saldos.items():
         print(f"{mes}: R$ {valor_final:.2f}")
 
-    # Encontrando o melhor e o pior mês de forma simples
-    melhor_mes = max(saldos, key=saldos.get)
-    pior_mes = min(saldos, key=saldos.get)
+# Funções secundárias
+def percorrer_mes():
+    # Mostra os meses disponíveis para o usuário
+    for i, nome_mes in enumerate(dados_do_app["meses"], start=1):
+        print(f"{i} - {nome_mes}")
+    
+def percorrer_despesas():
+    # Mostra os tipos de despesas disponíveis para o usuário
+    for i, tipo_despesa in enumerate(dados_do_app["categorias"], start=1):
+        print(f"{i} - {tipo_despesa}")
 
-    print(f"\nMaior Lucro: {melhor_mes}")
-    print(f"Maior Endividamento: {pior_mes}")
-
-def imposto_gasto():
-    gastos_por_categoria = {}
-
-    for t in dados_do_app["historico"]:
-        # Só nos interessam as despesas
-        if t["tipo"] == "despesa":
-            cat = t["categoria"]
-            valor = t["valor"]
-
-            if cat not in gastos_por_categoria:
-                gastos_por_categoria[cat] = 0.0
-            
-            gastos_por_categoria[cat] += valor
-
-    if not gastos_por_categoria:
-        print("Nenhuma despesa encontrada.")
-        return
-
-    print("\n--- GASTOS POR CATEGORIA ---")
-    for cat, total in gastos_por_categoria.items():
-        print(f"{cat}: R$ {total:.2f}")
-
-    # Descobre qual categoria tem o maior valor
-    maior_cat = max(gastos_por_categoria, key=gastos_por_categoria.get)
-    print(f"\nCategoria que mais pesou no bolso: {maior_cat}")
+def obter_mes_validado(idx):
+    if 0 <= idx < len(dados_do_app["meses"]):
+        return dados_do_app["meses"][idx]
+    else:
+        print('Mês inválido! Por favor, escolha um número da lista.')
+        return None
 
 # Loop para o menu principal do programa
 while True:
-    print('\n--- ORÁCULO FINANCEIRO 2.0 ---')
+    print('\nSeja bem-vindo ao Oráculo Financeiro 2.0!')
     print('1 - Registrar Receita')
     print('2 - Registrar Gasto')
     print('3 - Ver Relatório Geral')
@@ -146,21 +120,27 @@ while True:
         case 1:
             percorrer_mes()
             idx = int(input("Número do mês: ")) - 1
-            mes = dados_do_app["meses"][idx]
-            valor = float(input(f"Valor da receita para {mes}: R$ "))
-            cadastrar_receita(mes, valor)
+            mes = obter_mes_validado(idx)
 
+            if mes:
+                valor = float(input(f"Valor da receita para {mes}: R$ "))
+                cadastrar_receita(mes, valor)
         case 2:
             percorrer_mes()
-            idx_m = int(input("Número do mês: ")) - 1
-            mes = dados_do_app["meses"][idx_m]
+            idx = int(input("Número do mês: ")) - 1
+            mes = obter_mes_validado(idx)
             
-            percorrer_despesas()
-            idx_d = int(input("Número da categoria: ")) - 1
-            cat = dados_do_app["categorias"][idx_d]
-            
-            valor = float(input(f"Valor do gasto em {cat}: R$ "))
-            cadastrar_despesa(mes, valor, cat)
+            if mes:
+                percorrer_despesas()
+                idx_d = int(input("Número da categoria: ")) - 1
+                
+                # Validação simples para categoria também
+                if 0 <= idx_d < len(dados_do_app["categorias"]):
+                    cat = dados_do_app["categorias"][idx_d]
+                    valor = float(input(f"Valor do gasto em {cat} para {mes}: R$ "))
+                    cadastrar_despesa(mes, valor, cat)
+                else:
+                    print("Categoria inválida!")
 
         case 3:
             mostrar_relatorio()
