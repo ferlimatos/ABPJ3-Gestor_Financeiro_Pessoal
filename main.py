@@ -136,9 +136,9 @@ while True:
                 
                 # Validação simples para categoria também
                 if 0 <= idx_d < len(dados_do_app["categorias"]):
-                    cat = dados_do_app["categorias"][idx_d]
-                    valor = float(input(f"Valor do gasto em {cat} para {mes}: R$ "))
-                    cadastrar_despesa(mes, valor, cat)
+                    categoria = dados_do_app["categorias"][idx_d]
+                    valor = float(input(f"Valor do gasto em {categoria} para {mes}: R$ "))
+                    cadastrar_despesa(mes, valor, categoria)
                 else:
                     print("Categoria inválida!")
 
