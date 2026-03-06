@@ -18,7 +18,7 @@ O sistema utiliza um dicionário principal (dados_do_app) que contém:
 **Funções principais**:
 - `cadastrar_receita`: Registra entradas financeiras vinculadas a um mês específico.
 - `cadastrar_despesa`: Registra gastos categorizados (Aluguer, Energia, etc.).
-- `calcular_saldo`: Processa o histórico para informar se o balanço geral ou mensal é positivo, negativo ou nulo.
+- `mostrar_saldo`: Exibe o histórico e o saldo de cada mês.
 - `mostrar_relatorio`: Gera um resumo detalhado dos saldos acumulados por mês.
 
 **Funções secundárias**:
