@@ -1,122 +1,12 @@
+import modulo
 
-# Dicionário de configuração da aplicação
-dados_do_app = {
-    "meses": ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-    "categorias": ['Aluguel', 'Energia', 'Água', 'Internet', 'Cartão de Crédito'],
-    "historico": []  
-}
-
-# Funções principais
-def cadastrar_receita(mes, valor):
-    # Adiciona valores de receita ao dicionário do mês correspondente.
-    registro_receita = {
-        "tipo": "receita",
-        "mes": mes, 
-        "valor": valor,
-        "categoria": "Receita"
-    }
-    dados_do_app["historico"].append(registro_receita)
-    print(f'Receita de R${valor:.2f} adicionada no mês {mes} com sucesso!')
-
-def cadastrar_despesa(mes, valor, categoria):
-    # Registra gastos e gera a lista atualizada de débitos.
-    registro_gasto = {
-        "tipo": "despesa",
-        "mes": mes, 
-        "valor": valor, 
-        "categoria": categoria
-    }
-    dados_do_app["historico"].append(registro_gasto)
-    print(f'Despesa de R${valor:.2f} ({categoria}) adicionada no mês {mes} com sucesso!')
-
-def calcular_saldo(mes=None):
-    # Realiza a subtração entre receitas e despesas, informando se o saldo está positivo ou negativo.
-    receitas_totais = 0
-    despesas_totais = 0
-    
-    for transacao in dados_do_app["historico"]:
-        # Se um mês foi especificado, filtrar apenas aquele mês
-        if mes and transacao["mes"] != mes:
-            continue
-            
-        if transacao["tipo"] == "receita":
-            receitas_totais += transacao["valor"]
-        else:
-            despesas_totais += transacao["valor"]
-    
-    saldo = receitas_totais - despesas_totais
-    periodo = f"do mês {mes}" if mes else "de todos os meses"
-    
-    print(f"\nSALDO FINANCEIRO {periodo.upper()}")
-    print(f"Receitas Total:    R$ {receitas_totais:.2f}")
-    print(f"Despesas Total:    R$ {despesas_totais:.2f}")
-    print(f"Saldo:             R$ {saldo:.2f}")
-    
-    if saldo > 0:
-        print(f" POSITIVO - Situação financeira saudável!")
-    elif saldo < 0:
-        print(f"Saldo NEGATIVO - Você está em débito!")
-    else:
-        print(f"= Saldo ZERO - Receitas e despesas equilibradas!")
-    print(f"{'='*50}\n")
-    
-    return saldo
-
-def mostrar_saldo():
-    if not dados_do_app["historico"]:
-        print("Histórico vazio!")
-        return
-
-    # Usar um dicionário simples para somar os saldos
-    saldos = {}
-
-    for i in dados_do_app["historico"]:
-        mes = i["mes"]
-        valor = i["valor"]
-        
-        # Se o mês ainda não está no dicionário, começa com 0
-        if mes not in saldos:
-            saldos[mes] = 0.0
-        
-        # Se for receita soma, se for despesa subtrai
-        if i["tipo"] == "receita":
-            saldos[mes] += valor
-        else:
-            saldos[mes] -= valor
-
-    print("\n--- RESUMO POR MÊS ---")
-    for mes, valor_final in saldos.items():
-        print(f"{mes}: R$ {valor_final:.2f}")
-
-# Funções secundárias
-def percorrer_mes():
-    # Mostra os meses disponíveis para o usuário
-    for i, nome_mes in enumerate(dados_do_app["meses"], start=1):
-        print(f"{i} - {nome_mes}")
-        idx = int(input("Número do mês: ")) - 1
-    
-def percorrer_despesas():
-    # Mostra os tipos de despesas disponíveis para o usuário
-    for i, tipo_despesa in enumerate(dados_do_app["categorias"], start=1):
-        print(f"{i} - {tipo_despesa}")
-
-def obter_mes_validado(idx):
-    while True:
-        percorrer_mes()
-        try:
-            idx = int(input("Número do mês: ")) - 1
-            if 0 <= idx < len(dados_do_app["meses"]):
-                return dados_do_app["meses"][idx]
-            else:
-                print('\nMês inválido! Tente um número entre 1 e 12.')
-        except ValueError:
-            print('\nPor favor, digite apenas números!')
+print('\nSeja bem-vindo ao Oráculo Financeiro 2.0!')
 
 # Loop para o menu principal do programa
 while True:
-    print('\nSeja bem-vindo ao Oráculo Financeiro 2.0!')
+    print('\nEscolha um comando:')
     print('1 - Registrar Receita')
-    print('2 - Registrar Gasto')
+    print('2 - Registrar Despesa')
     print('3 - Ver Relatório Geral')
     print('4 - Sair')
 
@@ -124,32 +14,32 @@ while True:
 
     match escolha:
         case 1:
-            percorrer_mes()
-            idx = int(input("Número do mês: ")) - 1
-            mes = obter_mes_validado(idx)
+            modulo.percorrer_mes()
+            indice_mes = int(input("Número do mês: ")) - 1
+            mes = modulo.obter_mes_validado(indice_mes)
 
             if mes:
                 valor = float(input(f"Valor da receita para {mes}: R$ "))
-                cadastrar_receita(mes, valor)
+                modulo.cadastrar_receita(mes, valor)
         case 2:
-            percorrer_mes()
-            idx = int(input("Número do mês: ")) - 1
-            mes = obter_mes_validado(idx)
+            modulo.percorrer_mes()
+            indice_mes = int(input("Número do mês: ")) - 1
+            mes = modulo.obter_mes_validado(indice_mes)
 
             if mes:
-                percorrer_despesas()
-                idx_d = int(input("Número da categoria: ")) - 1
+                modulo.percorrer_despesas()
+                indice_despesa = int(input("Número da categoria: ")) - 1
                 
                 # Validação simples para categoria também
-                if 0 <= idx_d < len(dados_do_app["categorias"]):
-                    categoria = dados_do_app["categorias"][idx_d]
+                if 0 <= indice_despesa < len(modulo.dados_do_app["categorias"]):
+                    categoria = modulo.dados_do_app["categorias"][indice_despesa]
                     valor = float(input(f"Valor do gasto em {categoria} para {mes}: R$ "))
-                    cadastrar_despesa(mes, valor, categoria)
+                    modulo.cadastrar_despesa(mes, valor, categoria)
                 else:
                     print("Categoria inválida!")
 
         case 3:
-            mostrar_saldo()
+            modulo.mostrar_saldo()
 
         case 4:
             print('Encerrando... Até logo!')
