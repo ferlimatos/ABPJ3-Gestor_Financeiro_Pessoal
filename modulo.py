@@ -62,13 +62,16 @@ def calcular_saldo(mes=None):
     return saldo
 
 def mostrar_saldo():
+    # Verifica se existe algum registro no histórico.
+    # Caso esteja vazio, informa ao usuário e encerra a função.
     if not dados_do_app["historico"]:
         print("Histórico vazio!")
         return
 
-    # Usar um dicionário simples para somar os saldos
+    # Cria um dicionário para armazenar o saldo total de cada mês
     saldos = {}
 
+    # Percorre todas as transações registradas no histórico
     for i in dados_do_app["historico"]:
         mes = i["mes"]
         valor = i["valor"]
@@ -83,6 +86,7 @@ def mostrar_saldo():
         else:
             saldos[mes] -= valor
 
+    # Exibe o resumo final dos saldos por mês
     print("\n--- RESUMO POR MÊS ---")
     for mes, valor_final in saldos.items():
         print(f"{mes}: R$ {valor_final:.2f}")
