@@ -26,12 +26,12 @@ O sistema utiliza um dicionário principal (dados_do_app) que contém:
 - `percorrer_despesas`: Mostra os tipos de despesas disponíveis para o usuário.
 - `obter_mes_validado`: Função de segurança que garante que apenas meses existentes no sistema sejam selecionados.
 
-## 🗺️ Fluxograma
+## Fluxograma
 O fluxo detalha o caminho da informação desde a entrada do dado até a geração do relatório final.
 
 ![Fluxograma](Oráculo%20Financeiro%202.0.webp)
 
-## 📚 O que aprendi com o projeto
+## O que aprendi com o projeto
 - Apliquei princípios de Clean Code, utilizando nomes descritivos para funções e variáveis.
 - Organizei a estrutura visual do código para garantir legibilidade e manutenção.
 - Mapeei informações complexas utilizando dicionários (chaves e valores).
